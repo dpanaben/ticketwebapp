@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useContext } from 'react';
 import {
   Page,
   Navbar,
@@ -11,6 +11,7 @@ import {
   Icon,
   f7
 } from 'framework7-react';
+import { ImageContext } from '../App';
 
 import { isHoliday } from '../utils/OvertimeModel';
 import { getSettings, saveSettings, getImage, saveImage, deleteImage } from '../utils/SettingsStore';
@@ -18,7 +19,7 @@ import { t } from '../utils/i18n';
 
 const SettingsPage = () => {
   const [settings, setSettings] = useState(getSettings());
-  const [uploadedImage, setUploadedImage] = useState(null);
+  const { uploadedImage, setUploadedImage } = useContext(ImageContext);
   
   // 初始化設定
   useEffect(() => {

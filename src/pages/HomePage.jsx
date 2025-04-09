@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import {
   Page,
   Navbar,
@@ -14,6 +14,7 @@ import {
   Link,
   Icon
 } from 'framework7-react';
+import { ImageContext } from '../App';
 
 // 引入工具與自定義組件
 import { calculateWorkdayAndOvertime, formatMinutes, formatCurrency, isHoliday } from '../utils/OvertimeModel';
@@ -220,6 +221,11 @@ const AnxietyCardView = ({ tapCount, setTapCount, uploadedImage }) => {
     return () => clearInterval(interval);
   }, [bubbles.length]);
   
+  useEffect(() => {
+    console.log('Uploaded image updated:', uploadedImage);
+    // This effect will run whenever uploadedImage changes
+  }, [uploadedImage]);
+  
   return (
     <Card 
       className="anxiety-card ios-card" 
@@ -332,6 +338,7 @@ const HomePage = (props) => {
   console.log('Rendering HomePage', props);
   
   // 狀態
+  const { uploadedImage, setUploadedImage } = useContext(ImageContext);
   const [calculationResult, setCalculationResult] = useState({
     workdayMinutes: 0,
     workdayPay: 0,
@@ -342,7 +349,6 @@ const HomePage = (props) => {
   });
   
   const [settings, setSettings] = useState(getSettings());
-  const [uploadedImage, setUploadedImage] = useState(null);
   const [tapCount, setTapCount] = useState(0);
   const [quotes, setQuotes] = useState(() => {
     try {
@@ -439,6 +445,22 @@ const HomePage = (props) => {
   // 確保所有引言都存在
   const safeQuotes = quotes.map(q => q || '無法載入引言');
   console.log('Safe quotes for rendering:', safeQuotes);
+
+  useEffect(() => {
+    const handleStorageChange = (event) => {
+      if (event.key === 'uploadedImage') {
+        const newImage = event.newValue;
+        console.log('Local storage updated, new image:', newImage);
+        setUploadedImage(newImage);
+      }
+    };
+
+    window.addEventListener('storage', handleStorageChange);
+
+    return () => {
+      window.removeEventListener('storage', handleStorageChange);
+    };
+  }, []);
 
   return (
     <Page name="home">

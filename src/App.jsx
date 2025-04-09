@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, createContext } from 'react';
 import { App, View, f7ready, f7 } from 'framework7-react';
 import HomePage from './pages/HomePage';
 import SettingsPage from './pages/SettingsPage';
@@ -23,8 +23,12 @@ const f7params = {
   ],
 };
 
+// Create a context for the uploaded image
+export const ImageContext = createContext();
+
 const MyApp = () => {
   const [language, setCurrentLanguage] = useState(getLanguage());
+  const [uploadedImage, setUploadedImage] = useState(null);
   
   // 當框架準備就緒時執行
   useEffect(() => {
@@ -45,9 +49,11 @@ const MyApp = () => {
   }, [language]);
   
   return (
-    <App {...f7params}>
-      <View main url="/" />
-    </App>
+    <ImageContext.Provider value={{ uploadedImage, setUploadedImage }}>
+      <App {...f7params}>
+        <View main url="/" />
+      </App>
+    </ImageContext.Provider>
   );
 };
 
