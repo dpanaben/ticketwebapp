@@ -48,32 +48,80 @@ const SettingsPage = () => {
     handleSettingChange(key, newValue);
   };
   
+  // 調整分鐘
+  const incrementMinuteValue = (key) => {
+    let newValue = settings[key] + 5;
+    if (newValue >= 60) newValue = 0;
+    handleSettingChange(key, newValue);
+  };
+  
+  const decrementMinuteValue = (key) => {
+    let newValue = settings[key] - 5;
+    if (newValue < 0) newValue = 55;
+    handleSettingChange(key, newValue);
+  };
+  
   // 處理圖片上傳
   const handleImageUpload = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
-    
-    // 檢查文件類型
-    if (!file.type.match('image.*')) {
-      f7.dialog.alert(t('error') + ': ' + t('upload_photo_error'));
-      return;
-    }
-    
-    const reader = new FileReader();
-    
-    reader.onload = (event) => {
-      const imageData = event.target.result;
-      setUploadedImage(imageData);
-      saveImage(imageData);
+    console.log('Image upload triggered');
+    try {
+      const file = e.target.files[0];
+      if (!file) {
+        console.log('No file selected');
+        return;
+      }
       
-      f7.toast.show({
-        text: t('upload_success'),
-        position: 'center',
-        closeTimeout: 2000,
-      });
-    };
-    
-    reader.readAsDataURL(file);
+      console.log('File selected:', file.name, file.type, file.size);
+      
+      // 檢查文件類型
+      if (!file.type.match('image.*')) {
+        console.error('Invalid file type:', file.type);
+        f7.dialog.alert(t('error') + ': ' + t('upload_photo_error'));
+        return;
+      }
+      
+      // 檢查文件大小 (限制在10MB以內)
+      if (file.size > 10 * 1024 * 1024) {
+        console.error('File too large:', file.size);
+        f7.dialog.alert(t('error') + ': ' + t('file_too_large'));
+        return;
+      }
+      
+      f7.dialog.preloader(t('uploading'));
+      
+      const reader = new FileReader();
+      
+      reader.onload = (event) => {
+        try {
+          const imageData = event.target.result;
+          console.log('Image data loaded, length:', imageData.length);
+          setUploadedImage(imageData);
+          saveImage(imageData);
+          
+          f7.dialog.close();
+          f7.toast.show({
+            text: t('upload_success'),
+            position: 'center',
+            closeTimeout: 2000,
+          });
+        } catch (error) {
+          console.error('Error in reader.onload:', error);
+          f7.dialog.close();
+          f7.dialog.alert(t('error') + ': ' + error.message);
+        }
+      };
+      
+      reader.onerror = (error) => {
+        console.error('FileReader error:', error);
+        f7.dialog.close();
+        f7.dialog.alert(t('error') + ': ' + t('read_file_error'));
+      };
+      
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('Error in handleImageUpload:', error);
+      f7.dialog.alert(t('error') + ': ' + error.message);
+    }
   };
   
   // 刪除上傳的圖片
@@ -103,38 +151,58 @@ const SettingsPage = () => {
     <Page name="settings">
       <Navbar title={t('settings')} backLink={t('back')} />
       
-      <Block>
-        <h2 className="text-align-center">
-          {isHoliday() ? t('today_is_holiday') : t('today_is_weekday')}
-        </h2>
-      </Block>
+      <div className="settings-list-label">{isHoliday() ? t('today_is_holiday') : t('today_is_weekday')}</div>
       
-      <List>
+      <List inset className="ios-card">
         <ListItem header={t('work_hours')} groupTitle />
         
         {/* 工作開始時間設定 */}
         <ListItem title={t('work_start')}>
-          <div slot="after" className="stepper-container">
-            <Button small onClick={() => decrementValue('workStartHour')}>
-              <Icon f7="minus" />
-            </Button>
-            <span className="time-display">{formatTime(settings.workStartHour, settings.workStartMinute)}</span>
-            <Button small onClick={() => incrementValue('workStartHour')}>
-              <Icon f7="plus" />
-            </Button>
+          <div slot="after" className="time-control">
+            <button className="time-adjust-button" onClick={() => decrementValue('workStartHour')}>
+              <Icon material="remove" />
+            </button>
+            <span className="time-value">{settings.workStartHour}</span>
+            <button className="time-adjust-button" onClick={() => incrementValue('workStartHour')}>
+              <Icon material="add" />
+            </button>
+
+            <span style={{ margin: '0 8px' }}>:</span>
+            
+            <button className="time-adjust-button" onClick={() => decrementMinuteValue('workStartMinute')}>
+              <Icon material="remove" />
+            </button>
+            <span className="time-value">
+              {settings.workStartMinute < 10 ? '0' + settings.workStartMinute : settings.workStartMinute}
+            </span>
+            <button className="time-adjust-button" onClick={() => incrementMinuteValue('workStartMinute')}>
+              <Icon material="add" />
+            </button>
           </div>
         </ListItem>
         
         {/* 工作結束時間設定 */}
         <ListItem title={t('work_end')}>
-          <div slot="after" className="stepper-container">
-            <Button small onClick={() => decrementValue('workEndHour')}>
-              <Icon f7="minus" />
-            </Button>
-            <span className="time-display">{formatTime(settings.workEndHour, settings.workEndMinute)}</span>
-            <Button small onClick={() => incrementValue('workEndHour')}>
-              <Icon f7="plus" />
-            </Button>
+          <div slot="after" className="time-control">
+            <button className="time-adjust-button" onClick={() => decrementValue('workEndHour')}>
+              <Icon material="remove" />
+            </button>
+            <span className="time-value">{settings.workEndHour}</span>
+            <button className="time-adjust-button" onClick={() => incrementValue('workEndHour')}>
+              <Icon material="add" />
+            </button>
+
+            <span style={{ margin: '0 8px' }}>:</span>
+            
+            <button className="time-adjust-button" onClick={() => decrementMinuteValue('workEndMinute')}>
+              <Icon material="remove" />
+            </button>
+            <span className="time-value">
+              {settings.workEndMinute < 10 ? '0' + settings.workEndMinute : settings.workEndMinute}
+            </span>
+            <button className="time-adjust-button" onClick={() => incrementMinuteValue('workEndMinute')}>
+              <Icon material="add" />
+            </button>
           </div>
         </ListItem>
         
@@ -148,9 +216,9 @@ const SettingsPage = () => {
         </ListItem>
       </List>
       
-      <List>
-        <ListItem header={t('salary_settings')} groupTitle />
-        
+      <div className="settings-list-label">{t('salary_settings')}</div>
+      
+      <List inset className="ios-card">
         {/* 每小時薪資設定 */}
         <ListItem>
           <ListInput
@@ -159,44 +227,48 @@ const SettingsPage = () => {
             placeholder="0.00"
             value={settings.hourlyRate}
             onInput={(e) => handleSettingChange('hourlyRate', parseFloat(e.target.value) || 0)}
+            inputClassName="hourly-rate-input"
           />
         </ListItem>
       </List>
       
-      <List>
-        <ListItem header={t('emotional_release')} groupTitle />
-        
-        <Block className="photo-upload-container">
-          {uploadedImage && (
-            <div className="uploaded-image-container">
-              <img 
-                src={uploadedImage}
-                alt="Upload" 
-                className="uploaded-image"
-              />
-              <Button fill color="red" onClick={handleDeleteImage}>
-                {t('delete_photo')}
-              </Button>
-            </div>
-          )}
-          
-          {!uploadedImage && (
-            <div className="upload-button-container">
-              <label className="custom-file-upload">
-                <input 
-                  type="file" 
-                  accept="image/*"
-                  onChange={handleImageUpload}
-                  style={{ display: 'none' }}
-                />
-                <Button fill>
-                  <Icon f7="camera" />
-                  <span>{t('upload_photo')}</span>
-                </Button>
-              </label>
-            </div>
-          )}
+      <div className="settings-list-label">{t('emotional_release')}</div>
+      
+      <List inset>
+        <Block strong>
+          <p>{t('settings_description')}</p>
         </Block>
+        
+        {/* Photo Upload Section */}
+        <div className="ios-card">
+          <div className="photo-upload-container">
+            <h3>{t('emotional_release')}</h3>
+            
+            {uploadedImage ? (
+              <div className="uploaded-image-container">
+                <img src={uploadedImage} alt={t('uploaded_photo')} className="uploaded-image" />
+                <button className="delete-image-button" onClick={handleDeleteImage}>
+                  <Icon material="close" />
+                </button>
+              </div>
+            ) : (
+              <div className="upload-button-container">
+                <label className="upload-photo-label">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={handleImageUpload}
+                    style={{ display: 'none' }}
+                  />
+                  <div className="upload-photo-button">
+                    <Icon material="add_photo_alternate" />
+                    <span>{t('upload_photo')}</span>
+                  </div>
+                </label>
+              </div>
+            )}
+          </div>
+        </div>
       </List>
     </Page>
   );

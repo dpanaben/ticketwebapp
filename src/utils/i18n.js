@@ -40,7 +40,15 @@ const translations = {
     // 圖片上傳
     emotional_release: '情緒發洩',
     upload_photo: '上傳照片',
-    delete_photo: '刪除照片',
+    upload_success: '上傳成功',
+    upload_photo_error: '請選擇有效的圖片文件',
+    delete_photo: '刪除圖片',
+    confirm_delete_photo: '確定要刪除此圖片嗎？',
+    delete_success: '刪除成功',
+    confirm: '確認',
+    uploading: '上傳中...',
+    file_too_large: '文件太大，請選擇小於10MB的圖片',
+    read_file_error: '讀取文件時出錯',
     
     // 焦慮階段
     anxious_stage_1: '我很焦慮',
@@ -67,7 +75,6 @@ const translations = {
     // 其他
     save: '儲存',
     cancel: '取消',
-    confirm: '確認',
     back: '返回',
     loading: '加載中...',
     error: '發生錯誤',
@@ -106,7 +113,15 @@ const translations = {
     // Photo Upload
     emotional_release: 'Emotional Release',
     upload_photo: 'Upload Photo',
+    upload_success: 'Upload Successful',
+    upload_photo_error: 'Please select a valid image file',
     delete_photo: 'Delete Photo',
+    confirm_delete_photo: 'Are you sure you want to delete this photo?',
+    delete_success: 'Delete Successful',
+    confirm: 'Confirm',
+    uploading: 'Uploading...',
+    file_too_large: 'File is too large, please select an image less than 10MB',
+    read_file_error: 'Error reading the file',
     
     // Anxiety Stages
     anxious_stage_1: 'I feel anxious',
@@ -133,7 +148,6 @@ const translations = {
     // Others
     save: 'Save',
     cancel: 'Cancel',
-    confirm: 'Confirm',
     back: 'Back',
     loading: 'Loading...',
     error: 'Error',

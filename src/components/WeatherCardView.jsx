@@ -93,7 +93,7 @@ const WeatherCardView = () => {
   
   if (loading) {
     return (
-      <Card className="weather-card" style={backgroundStyle}>
+      <Card className="weather-card ios-card" style={backgroundStyle}>
         <CardContent style={{ paddingTop: '15px' }}>
           <div style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '15px' }}>台北市</div>
           <div className="weather-loading">
@@ -106,7 +106,7 @@ const WeatherCardView = () => {
   }
   
   return (
-    <Card className="weather-card" style={backgroundStyle}>
+    <Card className="weather-card ios-card" style={backgroundStyle}>
       <CardContent style={{ paddingTop: '15px' }}>
         <div style={{ fontSize: '20px', fontWeight: 'bold', marginBottom: '15px' }}>台北市</div>
         {weatherData && (

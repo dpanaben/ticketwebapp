@@ -17,7 +17,7 @@ import {
 
 // 引入工具與自定義組件
 import { calculateWorkdayAndOvertime, formatMinutes, formatCurrency, isHoliday } from '../utils/OvertimeModel';
-import { getSettings } from '../utils/SettingsStore';
+import { getSettings, getImage } from '../utils/SettingsStore';
 import { t, getRandomQuote } from '../utils/i18n';
 import AlmanacCardView from '../components/AlmanacCardView';
 import WeatherCardView from '../components/WeatherCardView';
@@ -48,7 +48,7 @@ const SalarySummaryView = ({ workdayPay, overtimePay, workdayMinutes, overtimeMi
         onClick={() => setIsFlipped(!isFlipped)}
       >
         {/* 正面 - 只顯示總薪資 */}
-        <Card className="card-face card-front">
+        <Card className="card-face card-front ios-card">
           <CardContent>
             <div className="total-pay-container">
               <div className="total-pay-label">{t('total_pay')}</div>
@@ -68,7 +68,7 @@ const SalarySummaryView = ({ workdayPay, overtimePay, workdayMinutes, overtimeMi
         </Card>
         
         {/* 背面 - 只顯示正常與加班薪資 */}
-        <Card className="card-face card-back">
+        <Card className="card-face card-back ios-card">
           <CardContent>
             <div className="salary-details-container">
               <div className="salary-detail-item">
@@ -222,7 +222,7 @@ const AnxietyCardView = ({ tapCount, setTapCount, uploadedImage }) => {
   
   return (
     <Card 
-      className="anxiety-card" 
+      className="anxiety-card ios-card" 
       style={{ 
         backgroundColor: colorForTapCount(),
         transform: isActive ? 'scale(0.98)' : 'scale(1)',
@@ -247,27 +247,39 @@ const AnxietyCardView = ({ tapCount, setTapCount, uploadedImage }) => {
             zIndex: 1
           }}
         >
-          <h2 style={{ 
-            color: 'white', 
-            fontSize: '44px', 
-            fontWeight: 'bold', 
-            marginBottom: '30px', 
-            textAlign: 'center',
-            userSelect: 'none'
-          }}>
-            {messageForTapCount()}
-          </h2>
-          
-          {uploadedImage && (
-            <img 
-              src={uploadedImage} 
-              alt="Anxiety Release" 
-              className="anxiety-image"
-              style={{ 
-                opacity: Math.max(0.3, 1 - tapCount / (maxTapCount / 2)),
-                transform: `scale(${1 - tapCount / (maxTapCount * 2)})` 
-              }}
-            />
+          {uploadedImage ? (
+            <>
+              <img 
+                src={uploadedImage} 
+                alt="Anxiety Release" 
+                className="anxiety-image"
+                style={{ 
+                  opacity: Math.max(0.5, 1 - tapCount / maxTapCount),
+                  transform: `scale(${1 - tapCount / (maxTapCount * 3)})`,
+                }}
+              />
+              <h2 style={{ 
+                color: 'white', 
+                fontSize: '36px', 
+                fontWeight: 'bold', 
+                margin: '0 0 20px', 
+                textAlign: 'center',
+                userSelect: 'none'
+              }}>
+                {messageForTapCount()}
+              </h2>
+            </>
+          ) : (
+            <h2 style={{ 
+              color: 'white', 
+              fontSize: '44px', 
+              fontWeight: 'bold', 
+              marginBottom: '30px', 
+              textAlign: 'center',
+              userSelect: 'none'
+            }}>
+              {messageForTapCount()}
+            </h2>
           )}
           
           {/* 彩虹泡泡 */}
@@ -305,7 +317,7 @@ const QuoteCard = ({ quote }) => {
   }
   
   return (
-    <Card className="quote-card">
+    <Card className="quote-card ios-card">
       <CardContent>
         <blockquote className="quote-text">
           {quote}
@@ -362,7 +374,7 @@ const HomePage = (props) => {
     
     // 載入圖片
     try {
-      const storedImage = localStorage.getItem('uploadedImage');
+      const storedImage = getImage();
       if (storedImage) {
         console.log('Found stored image');
         setUploadedImage(storedImage);

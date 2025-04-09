@@ -96,7 +96,7 @@ const AlmanacCardView = () => {
   const weekday = new Date().toLocaleDateString('zh-Hant', { weekday: 'long' });
   
   return (
-    <Card className="almanac-card" style={{ backgroundColor }}>
+    <Card className="almanac-card ios-card" style={{ backgroundColor }}>
       <CardContent style={{ paddingTop: '15px' }}>
         <div style={{ 
           display: 'flex', 
